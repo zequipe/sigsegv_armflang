@@ -9,7 +9,6 @@ jobs:
   test:
     name: Run armflang tests
     runs-on: ubuntu-24.04-arm
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -33,9 +32,8 @@ jobs:
         run: bash ./install_atfl
 
       - name: Install gdb and git
-        run: sudo apt install -y gdb git
+        run: sudo apt update && sudo apt install -y gdb git
 
       - name: Conduct the test
         run: |
-          exit 0
-          #bash ./sa ${{ matrix.modify }} ${{ matrix.flag }}
+          bash ./sa ${{ matrix.modify }} ${{ matrix.flag }}
