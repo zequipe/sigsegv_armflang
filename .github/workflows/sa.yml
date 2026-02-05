@@ -41,7 +41,7 @@ jobs:
 
       - name: Install LLVM Flang
         if: steps.cache-llvm.outputs.cache-hit != 'true' && matrix.compiler == 'flang'
-        run: cd /opt && bash ./install_flang
+        run: bash ./install_flang
 
       - name: Install gfortran
         uses: fortran-lang/setup-fortran@main && matrix.compiler == 'gfortran'
