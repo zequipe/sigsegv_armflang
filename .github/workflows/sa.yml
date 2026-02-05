@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         modify: [false, true]  # Whether to modify lincob.f90 to remove the is_finite check
-        flag: [O0, O1]  # Optimization flags to test
+        flag: [-O0, -O1]  # Optimization flags to test
 
     steps:
 
