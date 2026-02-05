@@ -7,7 +7,11 @@ cd fortran/tests
 cp -r ../lincoa ./
 cp -r ../common ./
 
-if [ "$1" = "true" ]; then
+MODIFY_CODE=$1
+COMPILER=$2
+FLAG=$3
+
+if [ $MODIFY_CODE = true ]; then
     # Remove lines that trigger false positive SIGSEGVs.
     STR="call assert(abs(iprint) <= 3"  # Line 222
     sed -i "/$STR/d" "lincoa/lincob.f90"
@@ -15,10 +19,7 @@ if [ "$1" = "true" ]; then
     sed -i "/$STR/d" "lincoa/lincob.f90"
 fi
 
-FLAG=$2
-
-/opt/arm/arm-toolchain-for-linux/bin/armflang \
-    $FLAG -g \
+$COMPILER $FLAG -g \
     -fno-stack-arrays -std=f2018 -pedantic -Wall -Wl,-z,noexecstack \
     -DPRIMA_DEBUGGING=1 -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
     -o rtest_i4_r8_d1_tst_c_o1 \

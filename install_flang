@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Usage: bash install_flang
+
+REPO_NAME="flang"
+GIT_ADDR="https://github.com/zaikunzhang/$REPO_NAME.git"
+TMP_DIR="$(mktemp -d)"
+
+if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
+    ARCH=macos_arm  # LLVM does not provide macos_x86 flang binaries as of February 2026
+else  # Assume Linux
+    ARCH=$(uname -m)
+fi
+
+# Clone the flang repository to the temporary directory
+git clone "$GIT_ADDR" "$TMP_DIR/$REPO_NAME"
+FLANG_ARCHIVE="$TMP_DIR/$REPO_NAME/$ARCH/flang.tar.xz"
+
+# Decompress the flang archive
+mkdir -p "$HOME"/tmp
+midir -p /opt
+FLANG_DIR=/opt
+cat "${FLANG_ARCHIVE}".* | tar -xJ --directory "$FLANG_DIR"
+FLANG_DIR="$FLANG_DIR/flang"
+
+# Remove the temporary directory
+rm -rf "$TMP_DIR"
+
+# Set environment variable for subsequent steps
+# N.B.: The following lines will not work if this script is invoked with sudo.
+# Put flang/bin to the beginning of PATH, in case there is another flang in PATH, e.g., from AOCC.
+echo "PATH=$FLANG_DIR/bin:$PATH" >> "$GITHUB_ENV"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FLANG_DIR/lib" >> "$GITHUB_ENV"
+
+# Show the result of the installation.
+export PATH=$FLANG_DIR/bin:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FLANG_DIR/lib
+echo "The flang installed is:"
+flang --version
+echo "The path to flang is:"
+command -v flang

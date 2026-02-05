@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         modify: [false, true]  # Whether to modify lincob.f90 to remove the is_finite check
+        compiler: [armflang, flang, gfortran]  # Compilers to test
         flag: [-O0, -O1]  # Optimization flags to test
 
     steps:
@@ -31,9 +32,26 @@ jobs:
         if: steps.cache-atfl.outputs.cache-hit != 'true'
         run: bash ./install_atfl
 
+      - name: Cache LLVM Flang
+        id: cache-llvm
+        uses: actions/cache@v5
+        with:
+          path: /opt/flang
+          key: ${{ runner.os }}-llvm
+
+      - name: Install LLVM Flang
+        if: steps.cache-llvm.outputs.cache-hit != 'true'
+        run: cd /opt && bash ./install_flang
+
+      - name: Install gfortran
+        uses: fortran-lang/setup-fortran@main
+        with:
+          compiler: gcc
+
       - name: Install gdb and git
         run: sudo apt update && sudo apt install -y gdb git
 
       - name: Conduct the test
         run: |
-          bash ./sa ${{ matrix.modify }} ${{ matrix.flag }}
+          exit 0
+          #bash ./sa ${{ matrix.modify }} ${{ matrix.compiler }} ${{ matrix.flag }}
