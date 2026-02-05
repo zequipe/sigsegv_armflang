@@ -14,11 +14,16 @@ if [ "$1" = "true" ]; then
 fi
 
 FLAG=$2
+if [ "$FLAG" = "-O0" ]; then
+    PRIMA_DEBUGGING=1
+else
+    PRIMA_DEBUGGING=0
+fi
 
 /opt/arm/arm-toolchain-for-linux/bin/armflang \
     -fno-stack-arrays -std=f2018 -pedantic -Wall -Wl,-z,noexecstack \
     -g $FLAG \
-    -DPRIMA_DEBUGGING=0 -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
+    -DPRIMA_DEBUGGING=$PRIMA_DEBUGGING -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
     -o rtest_i4_r8_d0_tst_c_o1 \
     ./common/consts.F90 \
     ./common/infos.f90 \
