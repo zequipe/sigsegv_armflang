@@ -11,6 +11,8 @@ MODIFY_CODE=$1
 COMPILER=$2
 FLAG=$3
 
+echo "MODIFY_CODE: $MODIFY_CODE, COMPILER: $COMPILER, FLAG: $FLAG"
+
 if [ $MODIFY_CODE = true ]; then
     # Remove lines that trigger false positive SIGSEGVs.
     STR="call assert(abs(iprint) <= 3"  # Line 222
@@ -18,6 +20,8 @@ if [ $MODIFY_CODE = true ]; then
     STR="call assert(all(is_finite(x))"  # Line 233
     sed -i "/$STR/d" "lincoa/lincob.f90"
 fi
+
+type $COMPILER
 
 $COMPILER $FLAG -g \
     -DPRIMA_DEBUGGING=1 -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
