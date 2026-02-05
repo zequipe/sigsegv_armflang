@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+git clone https://github.com/libprima/prima.git
+cd prima
+git checkout 70a07b2c98a5503e58923ca151acab2b1bf28aa2
+cd fortran/tests
+cp -r ../lincoa ./
+cp -r ../common ./
+
+if [ "$1" = "true" ]; then
+    STR="call assert(all(is_finite(x))"
+    sed -i "/$STR/d" "lincoa/lincob.f90"
+    cat lincoa/lincob.f90
+fi
+
+FLAG=$2
+
+/opt/arm/arm-toolchain-for-linux/bin/armflang \
+    -fno-stack-arrays -std=f2018 -pedantic -Wall -Wl,-z,noexecstack \
+    -$FLAG -g \
+    -DPRIMA_DEBUGGING=0 -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
+    -o rtest_i4_r8_d0_tst_c_o1 \
+    ./common/consts.F90 \
+    ./common/infos.f90 \
+    ./common/debug.F90 \
+    ./common/huge.F90 \
+    ./common/inf.F90 \
+    ./common/infnan.F90 \
+    ./common/memory.F90 \
+    ./common/string.f90 \
+    ./common/linalg.f90 \
+    ./common/univar.f90 \
+    ./common/ratio.f90 \
+    ./common/redrho.f90 \
+    ./common/xinbd.f90 \
+    ./common/history.f90 \
+    ./common/selectx.f90 \
+    ./common/checkexit.f90 \
+    ./common/fprint.f90 \
+    ./common/message.f90 \
+    ./common/preproc.f90 \
+    ./common/pintrf.f90 \
+    ./common/evaluate.f90 \
+    ./common/powalg.f90 \
+    ./common/shiftbase.f90 \
+    ./lincoa/update.f90 \
+    ./lincoa/initialize.f90 \
+    ./lincoa/getact.f90 \
+    ./lincoa/trustregion.f90 \
+    ./lincoa/geometry.f90 \
+    ./lincoa/lincob.f90 \
+    ./lincoa/lincoa.f90 \
+    ./testsuite/param.f90 \
+    ./testsuite/rand.f90 \
+    ./testsuite/noise.f90 \
+    ./testsuite/prob.f90 \
+    ./testsuite/datetime.f90 \
+    test_lincoa.f90 \
+    test.F90
+
+gdb -return-child-result -batch -iex "set auto-load safe-path /"  -ex run -ex where -ex quit ./rtest_i4_r8_d0_tst_c_o1
