@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-git clone https://github.com/libprima/prima.git
+if [ ! -d "prima" ]; then
+    git clone https://github.com/libprima/prima.git
+fi
 cd prima
 git checkout 70a07b2c98a5503e58923ca151acab2b1bf28aa2
 cd fortran/tests
@@ -10,6 +12,9 @@ cp -r ../common ./
 MODIFY_CODE=$1
 COMPILER=$2
 FLAG=$3
+if [ $COMPILER != gfortran ]; then
+    FLAG="$FLAG -mmlir -fdynamic-heap-array"
+fi
 
 echo "MODIFY_CODE: $MODIFY_CODE, COMPILER: $COMPILER, FLAG: $FLAG"
 
@@ -23,6 +28,7 @@ fi
 
 type $COMPILER
 
+rm -f rtest_i4_r8_d1_tst_c_o1
 $COMPILER $FLAG -g \
     -DPRIMA_DEBUGGING=1 -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
     -o rtest_i4_r8_d1_tst_c_o1 \
