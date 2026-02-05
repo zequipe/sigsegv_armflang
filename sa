@@ -17,7 +17,7 @@ FLAG=$2
 
 /opt/arm/arm-toolchain-for-linux/bin/armflang \
     -fno-stack-arrays -std=f2018 -pedantic -Wall -Wl,-z,noexecstack \
-    $FLAG -g \
+    -g $FLAG \
     -DPRIMA_DEBUGGING=0 -DPRIMA_AGGRESSIVE_OPTIONS=0 -DPRIMA_INTEGER_KIND=32 -DPRIMA_REAL_PRECISION=64 -DPRIMA_QP_AVAILABLE=0 -DPRIMA_TESTDIM="'big'" \
     -o rtest_i4_r8_d0_tst_c_o1 \
     ./common/consts.F90 \
