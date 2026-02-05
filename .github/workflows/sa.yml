@@ -19,7 +19,7 @@ jobs:
     steps:
 
       - name: Clone Repository (Latest)
-        uses: actions/checkout@v6.0
+        uses: actions/checkout@v6.0.1
 
       - name: Install Arm Toolchain for Linux
         run: bash ./install_atfl
