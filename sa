@@ -9,24 +9,18 @@ cd fortran/tests
 cp -r ../lincoa ./
 cp -r ../common ./
 
-MODIFY_CODE=$1
-COMPILER=$2
-FLAG=$3
-if [ $COMPILER != gfortran ]; then
-    FLAG="$FLAG -mmlir -fdynamic-heap-array"
+COMPILER=$1
+FLAG=$2
+if [ $FLAG = mmlir ]; then
+    FLAG="-mmlir -fdynamic-heap-array"
+else
+    FLAG="-fno-stack-arrays"
 fi
 
-echo "MODIFY_CODE: $MODIFY_CODE, COMPILER: $COMPILER, FLAG: $FLAG"
-
-if [ $MODIFY_CODE = true ]; then
-    # Remove lines that trigger false positive SIGSEGVs.
-    STR="call assert(abs(iprint) <= 3"  # Line 222
-    sed -i "/$STR/d" "lincoa/lincob.f90"
-    STR="call assert(all(is_finite(x))"  # Line 233
-    sed -i "/$STR/d" "lincoa/lincob.f90"
-fi
+echo "COMPILER: $COMPILER, FLAG: $FLAG"
 
 type $COMPILER
+$COMPILER --version
 
 rm -f rtest_i4_r8_d1_tst_c_o1
 $COMPILER $FLAG -g \

@@ -13,8 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         modify: [false, true]  # Whether to modify lincob.f90 to remove the is_finite check
-        compiler: [armflang, flang, gfortran]  # Compilers to test
-        flag: [-O0, -O1]  # Optimization flags to test
+        compiler: [armflang, flang]  # Compilers to test
+        flag: [mmlir, fno-stack-arrays]  # Optimization flags to test
+
 
     steps:
 
@@ -40,4 +41,4 @@ jobs:
 
       - name: Conduct the test
         run: |
-          bash ./sa ${{ matrix.modify }} ${{ matrix.compiler }} ${{ matrix.flag }}
+          bash ./sa ${{ matrix.compiler }} ${{ matrix.flag }}
