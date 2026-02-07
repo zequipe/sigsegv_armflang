@@ -5,7 +5,7 @@
 VERSION_NUMBER="21"
 if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
     brew update || true
-    brew install flang@${VERSION_NUMBER}
+    brew install flang
     flang --version
     #export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 else  # Assume Linux
@@ -19,16 +19,9 @@ else  # Assume Linux
 
 fi
 
-#find -L / -type f -name flang -exec test -x {} \; -print
-FLANG=$(find -L /opt -type f -name flang-${VERSION_NUMBER} -exec test -x {} \; -print | sort | tail -n 1)
-echo "Found flang at: $FLANG"
-LLVM_DIR="$(dirname $(dirname $FLANG))"
-export PATH=$LLVM_DIR/bin:$PATH
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib
-
 # Verify installation
 for tool in flang clang clang++; do
-    type $tool > /dev/null 2>&1 || \
+    type $tool-${VERSION_NUMBER} > /dev/null 2>&1 || \
         { echo "$tool not found after the installation, which probably failed." >&2 ; exit 1; }
 done
 
@@ -36,17 +29,17 @@ done
 echo "LLVM installation completed."
 for tool in flang clang clang++; do
     echo -e "\nThe $tool version is:\n"
-    $tool --version
+    $tool-${VERSION_NUMBER} --version
     echo -e "\nThe path to $tool is:\n"
-    command -v $tool
+    command -v $tool-${VERSION_NUMBER}
 done
 
 
-# Set environment variable for subsequent steps
-# N.B.: The following lines will not work if this script is invoked with sudo.
-# Put $LLVM_DIR/bin to the beginning of PATH, in case there is another flang in PATH, e.g., from AOCC.
-echo "PATH=$LLVM_DIR/bin:$PATH" >> "$GITHUB_ENV"
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib" >> "$GITHUB_ENV"
+## Set environment variable for subsequent steps
+## N.B.: The following lines will not work if this script is invoked with sudo.
+## Put $LLVM_DIR/bin to the beginning of PATH, in case there is another flang in PATH, e.g., from AOCC.
+#echo "PATH=$LLVM_DIR/bin:$PATH" >> "$GITHUB_ENV"
+#echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib" >> "$GITHUB_ENV"
 
-## Export relevant environment variables for GitHub Actions
-#env | grep -i 'llvm\|flang\|clang' >> "$GITHUB_ENV"
+### Export relevant environment variables for GitHub Actions
+##env | grep -i 'llvm\|flang\|clang' >> "$GITHUB_ENV"
