@@ -7,11 +7,13 @@ if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
     brew install llvm
 else  # Assume Linux
 
-    #TMP_DIR="$(mktemp -d)"
-    #cd "$TMP_DIR" || exit 1
-    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+    TMP_DIR="$(mktemp -d)"
+    cd "$TMP_DIR" || exit 1
+    wget https://apt.llvm.org/llvm.sh
+    chmod +x llvm.sh
+    sudo ./llvm.sh
     # Remove the temporary directory
-    #rm -rf "$TMP_DIR"
+    rm -rf "$TMP_DIR"
 
 fi
 
