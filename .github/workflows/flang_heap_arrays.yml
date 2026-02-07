@@ -1,8 +1,12 @@
 name: Test LLVM Fortran compilers, check which flags are needed to force the automatic arrays on the heap
 
 on:
+  push:
+    branches: [main]
+
   schedule:
     - cron: '0 0 1 * *'
+
   workflow_dispatch:
 
 
@@ -47,7 +51,7 @@ jobs:
         run: bash ./install_flang
 
       - name: Install gdb and git
-        run: :
+        run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt update || true && sudo apt install -y gdb git
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
