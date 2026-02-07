@@ -3,19 +3,33 @@
 
 
 VERSION_NUMBER="21"
+
 if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
     brew update || true
     brew install flang
     flang --version
 else  # Assume Linux
 
-    wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-    echo "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-${VERSION_NUMBER} main" | sudo tee /etc/apt/sources.list.d/llvm-toolchain-${VERSION_NUMBER}.list
-    sudo apt update || true
-    sudo apt-get install -y flang-${VERSION_NUMBER} clang-${VERSION_NUMBER} lld-${VERSION_NUMBER}
-    type flang-${VERSION_NUMBER}
-    flang-${VERSION_NUMBER} --version
-    cd "$(dirname $(which flang-${VERSION_NUMBER}))" || exit 1
+    # Add the LLVM repository
+    UBUNTU_CODENAME=$(lsb_release -sc)
+    echo "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${VERSION_NUMBER} main" \
+        | sudo tee /etc/apt/sources.list.d/llvm-toolchain-${VERSION_NUMBER}.list
+
+    # Add the GPG key for the LLVM repository
+    wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key \
+        | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+
+    # Install the packages; clang is needed.
+    sudo apt update
+    sudo apt-get install -y flang-${VERSION_NUMBER} clang-${VERSION_NUMBER} # lld-${VERSION_NUMBER}
+
+    # Verify the installation
+    type flang-${VERSION_NUMBER} || \
+        { echo "flang-${VERSION_NUMBER} not found after the installation, which probably failed." >&2 ; exit 1; }
+
+    # Set up a symbolic link named flang pointing to flang-${VERSION_NUMBER}
+    FLANG_DIR="$(dirname "$(which flang-${VERSION_NUMBER})")"
+    cd "$FLANG_DIR" || exit 1
     if [[ -f flang ]]; then
         echo "A flang executable already exists in the same directory as flang-${VERSION_NUMBER}."
         echo "Its version is:"
@@ -23,31 +37,17 @@ else  # Assume Linux
         echo "Backing up the existing flang executable to flang.bak"
         sudo mv flang flang.bak
     fi
-    echo "Creating a symbolic link named flang pointing to flang-${VERSION_NUMBER}"
+    echo "Creating a symbolic link named flang pointing to flang-${VERSION_NUMBER} in $(pwd)"
     sudo ln -s flang-${VERSION_NUMBER} flang
+
 fi
 
-# Verify installation
-for tool in flang ; do
-    type $tool > /dev/null 2>&1 || \
-        { echo "$tool not found after the installation, which probably failed." >&2 ; exit 1; }
-done
+type flang > /dev/null 2>&1 || \
+    { echo "flang not found after the installation, which probably failed." >&2 ; exit 1; }
 
 # Final messages
-echo "LLVM installation completed."
-for tool in flang ; do
-    echo -e "\nThe $tool version is:\n"
-    $tool --version
-    echo -e "\nThe path to $tool is:\n"
-    command -v $tool
-done
-
-
-## Set environment variable for subsequent steps
-## N.B.: The following lines will not work if this script is invoked with sudo.
-## Put $LLVM_DIR/bin to the beginning of PATH, in case there is another flang in PATH, e.g., from AOCC.
-#echo "PATH=$LLVM_DIR/bin:$PATH" >> "$GITHUB_ENV"
-#echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib" >> "$GITHUB_ENV"
-
-### Export relevant environment variables for GitHub Actions
-##env | grep -i 'llvm\|flang\|clang' >> "$GITHUB_ENV"
+echo "flang installation completed."
+echo -e "\nThe flang version is:\n"
+flang --version
+echo -e "\nThe path to flang is:\n"
+command -v flang

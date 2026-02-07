@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, ubuntu-22.04-arm ubuntu-22.04, macos-15-intel]
         #compiler: [armflang, amdflang, flang]  # Compilers to test
         compiler: [flang]  # Compilers to test
         flag: [mmlir, fno-stack-arrays]  # Optimization flags to test
