@@ -9,6 +9,7 @@ if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
 else  # Assume Linux
 
     wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+    echo "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-21 main" | sudo tee /etc/apt/sources.list.d/llvm-toolchain-21.list
     sudo apt update || true
     sudo apt-get install -y clang-21 lldb-21 lld-21 flang-21
 
