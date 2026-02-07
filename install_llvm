@@ -19,7 +19,7 @@ else  # Assume Linux
 
 fi
 
-find -L / -type f -name flang -exec test -x {} \; -print
+#find -L / -type f -name flang -exec test -x {} \; -print
 FLANG=$(find -L /opt -type f -name flang -exec test -x {} \; -print | sort | tail -n 1)
 echo "Found flang at: $FLANG"
 LLVM_DIR="$(dirname $(dirname $FLANG))"
