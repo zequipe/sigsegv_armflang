@@ -15,13 +15,15 @@ else  # Assume Linux
     sudo ./llvm.sh
     # Remove the temporary directory
     rm -rf "$TMP_DIR"
-    export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+    export PATH="/opt/llvm/bin:$PATH"
 
 fi
 
-#LLVM_DIR="$(dirname $(dirname $(command -v clang)))"
-#export PATH=$LLVM_DIR/bin:$PATH
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib
+FLANG=$(find -L /opt -type f -name flang -exec test -x {} \; -print 2>/dev/null | sort | tail -n 1)
+echo "Found flang at: $FLANG"
+LLVM_DIR="$(dirname $(dirname $FLANG))"
+export PATH=$LLVM_DIR/bin:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib
 
 # Verify installation
 for tool in flang clang clang++; do
@@ -42,7 +44,6 @@ done
 # Set environment variable for subsequent steps
 # N.B.: The following lines will not work if this script is invoked with sudo.
 # Put $LLVM_DIR/bin to the beginning of PATH, in case there is another flang in PATH, e.g., from AOCC.
-LLVM_DIR="$(dirname $(dirname $(command -v clang)))"
 echo "PATH=$LLVM_DIR/bin:$PATH" >> "$GITHUB_ENV"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LLVM_DIR/lib" >> "$GITHUB_ENV"
 
