@@ -12,7 +12,7 @@ else  # Assume Linux
     cd "$TMP_DIR" || exit 1
     wget https://apt.llvm.org/llvm.sh
     chmod +x llvm.sh
-    sudo ./llvm.sh
+    sudo ./llvm.sh all
     # Remove the temporary directory
     rm -rf "$TMP_DIR"
     export PATH="/opt/llvm/bin:$PATH"
