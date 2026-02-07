@@ -2,18 +2,20 @@
 # Usage: bash install_llvm
 
 
+VERSION_NUMBER="21"
 if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
     brew update || true
-    brew install flang
+    brew install flang@${VERSION_NUMBER}
     flang --version
     #export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 else  # Assume Linux
 
     wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-    echo "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-21 main" | sudo tee /etc/apt/sources.list.d/llvm-toolchain-21.list
+    echo "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-${VERSION_NUMBER} main" | sudo tee /etc/apt/sources.list.d/llvm-toolchain-${VERSION_NUMBER}.list
     sudo apt update || true
-    sudo apt-get install -y clang-21 lldb-21 lld-21 flang-21
-    flang-21 --version
+    sudo apt-get install -y clang-${VERSION_NUMBER} lldb-${VERSION_NUMBER} lld-${VERSION_NUMBER} flang-${VERSION_NUMBER}
+    type flang-${VERSION_NUMBER}
+    flang-${VERSION_NUMBER} --version
 
 fi
 
