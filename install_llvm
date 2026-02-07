@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Usage: bash install_llvm [VERSION_NUMBER]
+# Usage: bash install_llvm
 # N.B.: VERSION_NUMBER is used only on Linux; on macOS, Homebrew will always install the latest
 # version of LLVM as of 2026.
-# If VERSION_NUMBER is not provided, the script will determine the version number based on the
-# current date and the LLVM release schedule, which is updated every six months as of 2026, in
-# March and September. The version number in September 2025 is 21.
+# The script will determine the version number based on the current date and the LLVM release
+# schedule, which is updated every six months as of 2026, in March and September. The version number
+# in September 2025 is 21.
 
 
 if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
@@ -13,30 +13,22 @@ if [[ $(uname -s) == 'Darwin' ]] ; then  # macOS
     brew install llvm flang lld  # The latest version will be installed, which is 21 in September 2025.
 else  # Assume Linux
 
-    if [[ $# -eq 1 ]]; then
-        VERSION_NUMBER=$1
-    elif [[ $# -eq 0 ]]; then
-        # According to "LLVM Release Schedule" at https://llvm.org, we assume that the version is
-        # updated every six months, in March and September. The version number in September 2025 is 21.
-        # Then we can calculate the version number by the formula:
-        # VERSION_NUMBER = 21 + (CURRENT_YEAR - 2025) * 2 + (CURRENT_MONTH >= 9 ? 1 : 0).
-        CURRENT_YEAR=$(date +%Y)
-        CURRENT_MONTH=$(date +%m)
-        echo "Current year: ${CURRENT_YEAR}, current month: ${CURRENT_MONTH}"
-        if [[ ${CURRENT_MONTH} -ge 9 ]]; then
-            VERSION_NUMBER=$((21 + (CURRENT_YEAR - 2025) * 2))
-        elif [[ ${CURRENT_MONTH} -ge 3 ]]; then
-            VERSION_NUMBER=$((21 + (CURRENT_YEAR - 2025) * 2 - 1))
-        else
-            VERSION_NUMBER=$((21 + (CURRENT_YEAR - 2026) * 2 ))
-        fi
-        echo "No version number provided. Using the version number ${VERSION_NUMBER} based on the current date."
+    # According to "LLVM Release Schedule" at https://llvm.org, we assume that the version is
+    # updated every six months, in March and September. The version number in September 2025 is 21.
+    CURRENT_YEAR=$(date +%Y)
+    CURRENT_MONTH=$(date +%m)
+    echo "Current year: ${CURRENT_YEAR}, current month: ${CURRENT_MONTH}"
+    if [[ ${CURRENT_MONTH} -ge 9 ]]; then
+        VERSION_NUMBER=$((21 + (CURRENT_YEAR - 2025) * 2))
+    elif [[ ${CURRENT_MONTH} -ge 3 ]]; then
+        VERSION_NUMBER=$((21 + (CURRENT_YEAR - 2025) * 2 - 1))
     else
-        echo "Usage: $0 [VERSION_NUMBER]"
-        exit 1
+        VERSION_NUMBER=$((21 + (CURRENT_YEAR - 2026) * 2 ))
     fi
+    echo "Using the version number ${VERSION_NUMBER} based on the current date."
 
     # Add the LLVM repository
+    # See https://apt.llvm.org/
     UBUNTU_CODENAME=$(lsb_release -sc)
     echo "deb http://apt.llvm.org/${UBUNTU_CODENAME}/ llvm-toolchain-${UBUNTU_CODENAME}-${VERSION_NUMBER} main" \
         | sudo tee /etc/apt/sources.list.d/llvm-toolchain-${VERSION_NUMBER}.list
