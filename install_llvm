@@ -12,7 +12,7 @@ else  # Assume Linux
     wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
     echo "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-${VERSION_NUMBER} main" | sudo tee /etc/apt/sources.list.d/llvm-toolchain-${VERSION_NUMBER}.list
     sudo apt update || true
-    sudo apt-get install -y flang-${VERSION_NUMBER} clang-${VERSION_NUMBER} lldb-${VERSION_NUMBER} lld-${VERSION_NUMBER}
+    sudo apt-get install -y flang-${VERSION_NUMBER} clang-${VERSION_NUMBER} lld-${VERSION_NUMBER}
     type flang-${VERSION_NUMBER}
     flang-${VERSION_NUMBER} --version
     cd "$(dirname $(which flang-${VERSION_NUMBER}))" || exit 1
@@ -25,7 +25,6 @@ else  # Assume Linux
     fi
     echo "Creating a symbolic link named flang pointing to flang-${VERSION_NUMBER}"
     sudo ln -s flang-${VERSION_NUMBER} flang
-    sudo ln -s lldb-${VERSION_NUMBER} lldb
 fi
 
 # Verify installation
