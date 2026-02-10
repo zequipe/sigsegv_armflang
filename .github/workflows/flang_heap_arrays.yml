@@ -47,7 +47,7 @@ jobs:
 
       - name: Install AMD AOMP Flang
         if: matrix.compiler == 'amdflang'
-        run: bash ./install_aomp
+        run: bash .github/scripts/install_aomp 20 600  # Retry up to 20 times with a delay of 600 seconds between retries, to avoid transient network issues.
 
       - name: Install LLVM Flang
         if: matrix.compiler == 'flang'
