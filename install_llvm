@@ -21,8 +21,10 @@ if [[ "$OSTYPE" == darwin* ]] ; then
     brew install llvm flang lld  # The latest version will be installed, which is 21 in September 2025.
 elif [[ "$OSTYPE" == cygwin* || "$OSTYPE" == win* || "$OSTYPE" == msys* ]]; then
     echo "We are on Windows."
-    choco install llvm --force
-    #choco upgrade llvm
+    choco install llvm
+    choco upgrade llvm
+    ls -al "/c/Program Files/LLVM/bin/" || true
+    ls -al "C:\Program Files (x86)\LLVM\bin" || true
 else  # Assume Ubuntu
 
     echo "We assume that we are on Ubuntu."

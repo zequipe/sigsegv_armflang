@@ -69,8 +69,6 @@ jobs:
             sudo apt update || true && sudo apt install -y gdb git
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             brew update || true && brew install gdb git
-          else
-            choco install -y git  # gdb cannot be installed using choco
           fi
 
       - name: Conduct the test
