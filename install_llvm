@@ -8,6 +8,8 @@
 
 set -euo pipefail
 
+echo OSTYPE: "$OSTYPE"
+
 if [[ "$OSTYPE" == "darwin*" ]] ; then  # macOS
     echo "We are on macOS."
     brew update || true
