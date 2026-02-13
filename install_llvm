@@ -10,12 +10,14 @@ set -euo pipefail
 
 echo OSTYPE: "$OSTYPE"
 
-if [[ "$OSTYPE" == "darwin*" ]] ; then  # macOS
+# N.B.: Do not quote darwin* etc., or the pattern will be interpreted as a literal string without
+# expanding the wildcard *.
+if [[ "$OSTYPE" == darwin* ]] ; then
     echo "We are on macOS."
     brew update || true
     # clang is included in llvm, but flang and lld are separate packages.
     brew install llvm flang lld  # The latest version will be installed, which is 21 in September 2025.
-elif [[ "$OSTYPE" == "cygwin*" || "$OSTYPE" == "win*" || "$OSTYPE" == "msys*" ]]; then
+elif [[ "$OSTYPE" == cygwin* || "$OSTYPE" == win* || "$OSTYPE" == msys* ]]; then
     echo "We are on Windows."
     choco install llvm flang lld
 else  # Assume Ubuntu
