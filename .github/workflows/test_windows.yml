@@ -1,0 +1,37 @@
+name: Test LLVM Fortran compilers on Windows
+
+on:
+  push:
+    branches: [main]
+
+  schedule:
+    - cron: '0 0 2 * *'
+
+  workflow_dispatch:
+
+
+jobs:
+
+  test:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, windows-11-arm]
+
+    steps:
+
+      - name: Clone Repository
+        uses: actions/checkout@v6
+
+      - name: Install and test LLVM Flang
+        shell: bash
+        run: |
+          choco upgrade chocolatey -y || true
+          choco uninstall llvm -y || true
+          choco install llvm -y --version=21.1.8
+          ls -al "/c/Program Files/LLVM/bin/" || true
+          type flang
+          type clang
+          type lld
