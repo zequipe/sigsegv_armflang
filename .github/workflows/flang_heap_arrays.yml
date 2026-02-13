@@ -78,7 +78,7 @@ jobs:
         run: |
           if [[ "${{ matrix.os }}" == windows-latest ]] ; then
             echo "We are on ${{ matrix.os }}. LLVM installed by choco may not provide flang."
-            LLVM_VERSION=$(llvm-config --version 2>/dev/null | cut -d '.' -f1)
+            LLVM_VERSION=$(llvm-config --version 2>/dev/null) ; LLVM_VERSION="${LLVM_VERSION%%.*}"
             echo "LLVM version: $LLVM_VERSION"
             FLANG_PATH=$(command -v flang 2>/dev/null || echo "NOT_FOUND")
             echo "Flang path: $FLANG_PATH"
