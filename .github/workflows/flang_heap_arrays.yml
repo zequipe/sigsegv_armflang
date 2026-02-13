@@ -80,7 +80,7 @@ jobs:
             echo "We are on ${{ matrix.os }}. LLVM installed by choco may not provide flang."
             # Infer the version of LLVM from llvm-ar. We should have used `llvm-config --version`,
             # but it is not available on windows-latest after LLVM 21.1.8 is installed with choco.
-            LLVM_VERSION=$(llvm-ar --version 2>/dev/null | grep -oP 'LLVM version \K[0-9]+') || LLVM_VERSION=65536
+            LLVM_VERSION=$(llvm-ar --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | cut -d. -f1)
             echo "LLVM version inferred from llvm-ar: $LLVM_VERSION"
             FLANG_PATH=$(command -v flang 2>/dev/null || echo "NOT_FOUND")
             echo "Flang path: $FLANG_PATH"
