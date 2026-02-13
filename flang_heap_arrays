@@ -69,10 +69,10 @@ $COMPILER $FLAG -g \
 
 echo "Compilation finished."
 
-if [[ $(uname) = "Darwin" ]] ; then
-    echo "Running test on macOS..."
+if [[ "$OSTYPE" == "darwin*" ]] ; then
+    echo "Running test without gdb ..."
     ./rtest_i4_r8_d1_tst_c_o1
 else
-    echo "Running test with gdb on Linux..."
+    echo "Running test with gdb ..."
     gdb -return-child-result -batch -iex "set auto-load safe-path /"  -ex run -ex where -ex quit ./rtest_i4_r8_d1_tst_c_o1
 fi

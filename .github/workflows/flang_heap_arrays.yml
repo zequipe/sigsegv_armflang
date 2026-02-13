@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15-intel]
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-latest, macos-15-intel]
         compiler: [armflang, amdflang, flang]  # Compilers to test
         flag: [mmlir, fno-stack-arrays]  # Optimization flags to test
         exclude:
@@ -33,6 +33,14 @@ jobs:
           - os: macos-15-intel
             compiler: armflang
           - os: macos-15-intel
+            compiler: amdflang
+          - os: windows-latest
+            compiler: armflang
+          - os: windows-latest
+            compiler: amdflang
+          - os: windows-11-arm
+            compiler: armflang
+          - os: windows-11-arm
             compiler: amdflang
 
 
@@ -50,17 +58,22 @@ jobs:
         run: bash install_aomp 20 600  # Retry up to 20 times with a delay of 600 seconds between retries, to avoid transient network issues.
 
       - name: Install LLVM Flang
+        shell: bash
         if: matrix.compiler == 'flang'
         run: bash ./install_llvm
 
       - name: Install gdb and git
+        shell: bash
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt update || true && sudo apt install -y gdb git
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             brew update || true && brew install gdb git
+          else
+            choco install -y gdb git
           fi
 
       - name: Conduct the test
+        shell: bash
         run: |
           bash ./flang_heap_arrays ${{ matrix.compiler }} ${{ matrix.flag }}
