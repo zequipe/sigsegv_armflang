@@ -11,7 +11,9 @@ set -euo pipefail
 echo OSTYPE: "$OSTYPE"
 
 # N.B.: Do not quote darwin* etc., or the pattern will be interpreted as a literal string without
-# expanding the wildcard *.
+# expanding the wildcard *. See https://www.gnu.org/software/bash/manual/bash.html#Double-Quotes-1 :
+# Enclosing characters in double quotes (‘"’) preserves the literal value of all characters within
+# the quotes, with the exception of ‘$’, ‘`’, ‘\’, and, when history expansion is enabled, ‘!’.
 if [[ "$OSTYPE" == darwin* ]] ; then
     echo "We are on macOS."
     brew update || true
@@ -19,7 +21,7 @@ if [[ "$OSTYPE" == darwin* ]] ; then
     brew install llvm flang lld  # The latest version will be installed, which is 21 in September 2025.
 elif [[ "$OSTYPE" == cygwin* || "$OSTYPE" == win* || "$OSTYPE" == msys* ]]; then
     echo "We are on Windows."
-    choco install llvm flang lld
+    choco install llvm --version=21
 else  # Assume Ubuntu
 
     echo "We assume that we are on Ubuntu."
